@@ -16,14 +16,19 @@ class FeatureRepository extends ServiceEntityRepository
         parent::__construct($registry, Feature::class);
     }
 
-    public function findOneByName(string $name): Feature
-    {
-        return $this->findOneBy(['name' => $name]);
-    }
-
     public function update(Feature $feature): void
     {
         $this->getEntityManager()->persist($feature);
         $this->getEntityManager()->flush();
+    }
+
+    public function findByNameWithRules(string $name): ?Feature
+    {
+        $query = $this->getEntityManager()->createQuery(
+            'SELECT f, r FROM App\Entity\Feature f
+            JOIN f.rules r
+            WHERE f.name=:name'
+        )->setParameter('name', $name);
+        return $query->getOneOrNullResult();
     }
 }
