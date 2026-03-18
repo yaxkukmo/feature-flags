@@ -1,3 +1,9 @@
+###> ide ###
+/.idea/
+/.vscode/
+/.phpactor.json
+*.un~
+###< ide ###
 
 ###> symfony/framework-bundle ###
 /.env.local
