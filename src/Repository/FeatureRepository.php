@@ -16,6 +16,11 @@ class FeatureRepository extends ServiceEntityRepository
         parent::__construct($registry, Feature::class);
     }
 
+    public function findOneByName(string $name): Feature
+    {
+        return $this->findOneBy(['name' => $name]);
+    }
+
     public function update(Feature $feature): void
     {
         $this->getEntityManager()->persist($feature);
