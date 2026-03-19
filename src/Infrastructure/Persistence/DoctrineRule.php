@@ -1,13 +1,13 @@
 <?php
 
-namespace App\Entity;
+namespace App\Infrastructure\Persistence;
 
-use App\Enum\RuleOperator;
-use App\Repository\RuleRepository;
+use App\Domain\Feature\RuleOperator;
 use Doctrine\ORM\Mapping as ORM;
 
-#[ORM\Entity(repositoryClass: RuleRepository::class)]
-class Rule
+#[ORM\Entity(repositoryClass: DoctrineRuleRepository::class)]
+#[ORM\Table(name: 'rule')]
+class DoctrineRule
 {
     #[ORM\Id]
     #[ORM\GeneratedValue]
@@ -15,7 +15,7 @@ class Rule
     private ?int $id = null;
 
     #[ORM\ManyToOne(inversedBy: 'rules')]
-    private ?Feature $feature = null;
+    private ?DoctrineFeature $feature = null;
 
     #[ORM\Column(length: 255)]
     private ?string $type = null;
@@ -31,12 +31,12 @@ class Rule
         return $this->id;
     }
 
-    public function getFeature(): ?Feature
+    public function getFeature(): ?DoctrineFeature
     {
         return $this->feature;
     }
 
-    public function setFeature(?Feature $feature): static
+    public function setFeature(?DoctrineFeature $feature): static
     {
         $this->feature = $feature;
 

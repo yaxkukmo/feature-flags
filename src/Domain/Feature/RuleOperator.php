@@ -1,6 +1,6 @@
 <?php
 
-namespace App\Enum;
+namespace App\Domain\Feature;
 
 enum RuleOperator: string
 {

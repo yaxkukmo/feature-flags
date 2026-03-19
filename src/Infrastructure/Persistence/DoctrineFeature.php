@@ -1,14 +1,14 @@
 <?php
 
-namespace App\Entity;
+namespace App\Infrastructure\Persistence;
 
-use App\Repository\FeatureRepository;
 use Doctrine\Common\Collections\ArrayCollection;
 use Doctrine\Common\Collections\Collection;
 use Doctrine\ORM\Mapping as ORM;
 
-#[ORM\Entity(repositoryClass: FeatureRepository::class)]
-class Feature
+#[ORM\Entity(repositoryClass: DoctrineFeatureRepository::class)]
+#[ORM\Table(name: 'feature')]
+class DoctrineFeature
 {
     #[ORM\Id]
     #[ORM\GeneratedValue]
@@ -27,7 +27,7 @@ class Feature
     /**
      * @var Collection<int, Rule>
      */
-    #[ORM\OneToMany(targetEntity: Rule::class, mappedBy: 'feature')]
+    #[ORM\OneToMany(targetEntity: DoctrineRule::class, mappedBy: 'feature')]
     private Collection $rules;
 
     public function __construct()
@@ -84,7 +84,7 @@ class Feature
         return $this->rules;
     }
 
-    public function addRule(Rule $rule): static
+    public function addRule(DoctrineRule $rule): static
     {
         if (!$this->rules->contains($rule)) {
             $this->rules->add($rule);
@@ -94,7 +94,7 @@ class Feature
         return $this;
     }
 
-    public function removeRule(Rule $rule): static
+    public function removeRule(DoctrineRule $rule): static
     {
         if ($this->rules->removeElement($rule)) {
             // set the owning side to null (unless already changed)

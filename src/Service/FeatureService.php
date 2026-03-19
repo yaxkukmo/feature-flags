@@ -2,16 +2,16 @@
 namespace App\Service;
 
 use App\Dto\RuleContext;
-use App\Entity\Feature;
+use App\Domain\Feature\Feature;
 use App\Exception\FeatureNotFoundException;
-use App\Repository\FeatureRepository;
+use App\Domain\Feature\FeatureRepositoryInterface;
 use App\Service\Strategy\RolloutEvaluationStrategy;
 use App\Service\Strategy\RuleEvaluationStrategy;
 
 class FeatureService
 {
     public function __construct(
-        private FeatureRepository $repository,
+        private FeatureRepositoryInterface $repository,
     ) { }
 
 
@@ -20,7 +20,7 @@ class FeatureService
         $feature = $this->getFeatureByName($name);
         $isEnabled = $feature->isEnabled();
         if(!$isEnabled) return false;
-        $strategy = $feature->getRules()->isEmpty()
+        $strategy = empty($feature->rules())
             ? new RolloutEvaluationStrategy($context, $feature)
             : new RuleEvaluationStrategy($context, $feature);
         return $strategy->evaluate();
@@ -38,8 +38,8 @@ class FeatureService
     public function toggleFeatureValue(string $name): Feature
     {
         $feature = $this->getFeatureByName($name);
-        $feature->setEnabled(!$feature->isEnabled());
-        $this->repository->update($feature);
+        $feature->isEnabled() ? $feature->disable() : $feature->enable();
+        $this->repository->save($feature);
         return $feature;
     }
 }

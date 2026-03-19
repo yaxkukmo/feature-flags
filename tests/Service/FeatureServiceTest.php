@@ -3,10 +3,10 @@
 namespace App\Tests\Service;
 
 use App\Dto\RuleContext;
-use App\Entity\Feature;
-use App\Entity\Rule;
-use App\Enum\RuleOperator;
-use App\Repository\FeatureRepository;
+use App\Domain\Feature\Feature;
+use App\Domain\Feature\Rule;
+use App\Domain\Feature\RuleOperator;
+use App\Infrastructure\Persistence\DoctrineFeatureRepository as FeatureRepository;
 use App\Service\FeatureService;
 use PHPUnit\Framework\Attributes\Test;
 use PHPUnit\Framework\TestCase;
@@ -15,8 +15,7 @@ class FeatureServiceTest extends TestCase
 {
     #[Test]
     public function returnsFalseWhenFeatureNotEnabled() {
-        $feature = new Feature;
-        $feature->setEnabled(false);
+        $feature = new Feature(1, 'someName', false);
         $repoMock = $this->createMock(FeatureRepository::class);
         $repoMock->expects($this->once())->method('findByNameWithRules')
             ->willReturn($feature);
@@ -26,9 +25,7 @@ class FeatureServiceTest extends TestCase
 
     #[Test]
     public function returnsFalseWhenNoRulesAndRolloutPercentageIsNull() {
-        $feature = new Feature;
-        $feature->setEnabled(true);
-        $feature->setRolloutPercentage(null);
+        $feature = new Feature(1, 'someName', true);
         $repoMock = $this->createMock(FeatureRepository::class);
         $repoMock->expects($this->once())->method('findByNameWithRules')
             ->willReturn($feature);
@@ -38,9 +35,7 @@ class FeatureServiceTest extends TestCase
 
     #[Test]
     public function returnsFalseWhenNoRulesAndRolloutPercentageIsZero() {
-        $feature = new Feature;
-        $feature->setEnabled(true);
-        $feature->setRolloutPercentage(0);
+        $feature = new Feature(1, 'someName', true, [], 0);
         $repoMock = $this->createMock(FeatureRepository::class);
         $repoMock->expects($this->once())->method('findByNameWithRules')
             ->willReturn($feature);
@@ -50,9 +45,7 @@ class FeatureServiceTest extends TestCase
 
     #[Test]
     public function returnsTrueWhenNoRulesAndRolloutPercentageIs100() {
-        $feature = new Feature;
-        $feature->setEnabled(true);
-        $feature->setRolloutPercentage(100);
+        $feature = new Feature(1, 'someName', true, [], 100);
         $repoMock = $this->createMock(FeatureRepository::class);
         $repoMock->expects($this->once())->method('findByNameWithRules')
             ->willReturn($feature);
@@ -62,9 +55,7 @@ class FeatureServiceTest extends TestCase
 
     #[Test]
     public function returnsTrueWhenNoRulesAndUserIdIsInRolloutPercentageRange() {
-        $feature = new Feature;
-        $feature->setEnabled(true);
-        $feature->setRolloutPercentage(10);
+        $feature = new Feature(1, 'someName', true, [], 10);
         $repoMock = $this->createMock(FeatureRepository::class);
         $repoMock->expects($this->once())->method('findByNameWithRules')
             ->willReturn($feature);
@@ -74,9 +65,7 @@ class FeatureServiceTest extends TestCase
 
     #[Test]
     public function returnsFalseWhenNoRulesAndUserIdIsNotInRolloutPercentageRange() {
-        $feature = new Feature;
-        $feature->setEnabled(true);
-        $feature->setRolloutPercentage(10);
+        $feature = new Feature(1, 'someName', true, [], 10);
         $repoMock = $this->createMock(FeatureRepository::class);
         $repoMock->expects($this->once())->method('findByNameWithRules')
             ->willReturn($feature);
@@ -86,14 +75,8 @@ class FeatureServiceTest extends TestCase
 
     #[Test]
     public function returnsFalseWhenRulesNotMetEqualCondition() {
-        $feature = new Feature;
-        $feature->setEnabled(true);
-        $feature->setRolloutPercentage(10);
-        $rule = new Rule();
-        $rule->setType('user_id');
-        $rule->setValue(99);
-        $rule->setOperator(RuleOperator::EQUALS);
-        $feature->addRule($rule);
+        $rule = new Rule(1, 'user_id', 99, RuleOperator::EQUALS);
+        $feature = new Feature(1, 'someName', true, [$rule], 10);
         $repoMock = $this->createMock(FeatureRepository::class);
         $repoMock->expects($this->once())->method('findByNameWithRules')
             ->willReturn($feature);
@@ -103,14 +86,8 @@ class FeatureServiceTest extends TestCase
 
     #[Test]
     public function returnsTrueWhenRulesMetEqualCondition() {
-        $feature = new Feature;
-        $feature->setEnabled(true);
-        $feature->setRolloutPercentage(10);
-        $rule = new Rule();
-        $rule->setType('user_id');
-        $rule->setValue(99);
-        $rule->setOperator(RuleOperator::EQUALS);
-        $feature->addRule($rule);
+        $rule = new Rule(1, 'user_id', 99, RuleOperator::EQUALS);
+        $feature = new Feature(1, 'someName', true, [$rule], 10);
         $repoMock = $this->createMock(FeatureRepository::class);
         $repoMock->expects($this->once())->method('findByNameWithRules')
             ->willReturn($feature);
@@ -120,14 +97,8 @@ class FeatureServiceTest extends TestCase
 
     #[Test]
     public function returnsFalseWhenRulesNotMetGreaterThanCondition() {
-        $feature = new Feature;
-        $feature->setEnabled(true);
-        $feature->setRolloutPercentage(10);
-        $rule = new Rule();
-        $rule->setType('user_id');
-        $rule->setValue(99);
-        $rule->setOperator(RuleOperator::GREATER_THAN);
-        $feature->addRule($rule);
+        $rule = new Rule(1, 'user_id', 99, RuleOperator::GREATER_THAN);
+        $feature = new Feature(1, 'someName', true, [$rule], 10);
         $repoMock = $this->createMock(FeatureRepository::class);
         $repoMock->expects($this->once())->method('findByNameWithRules')
             ->willReturn($feature);
@@ -137,14 +108,8 @@ class FeatureServiceTest extends TestCase
 
     #[Test]
     public function returnsTrueWhenRulesMetGreaterThanCondition() {
-        $feature = new Feature;
-        $feature->setEnabled(true);
-        $feature->setRolloutPercentage(10);
-        $rule = new Rule();
-        $rule->setType('user_id');
-        $rule->setValue(99);
-        $rule->setOperator(RuleOperator::GREATER_THAN);
-        $feature->addRule($rule);
+        $rule = new Rule(1, 'user_id', 99, RuleOperator::GREATER_THAN);
+        $feature = new Feature(1, 'someName', true, [$rule], 10);
         $repoMock = $this->createMock(FeatureRepository::class);
         $repoMock->expects($this->once())->method('findByNameWithRules')
             ->willReturn($feature);
@@ -154,14 +119,8 @@ class FeatureServiceTest extends TestCase
 
     #[Test]
     public function returnsFalseWhenRulesNotMetLessThanCondition() {
-        $feature = new Feature;
-        $feature->setEnabled(true);
-        $feature->setRolloutPercentage(10);
-        $rule = new Rule();
-        $rule->setType('user_id');
-        $rule->setValue(99);
-        $rule->setOperator(RuleOperator::LESS_THAN);
-        $feature->addRule($rule);
+        $rule = new Rule(1, 'user_id', 99, RuleOperator::LESS_THAN);
+        $feature = new Feature(1, 'someName', true, [$rule], 10);
         $repoMock = $this->createMock(FeatureRepository::class);
         $repoMock->expects($this->once())->method('findByNameWithRules')
             ->willReturn($feature);
@@ -171,14 +130,8 @@ class FeatureServiceTest extends TestCase
 
     #[Test]
     public function returnsTrueWhenRulesMetLessThanCondition() {
-        $feature = new Feature;
-        $feature->setEnabled(true);
-        $feature->setRolloutPercentage(10);
-        $rule = new Rule();
-        $rule->setType('user_id');
-        $rule->setValue(99);
-        $rule->setOperator(RuleOperator::LESS_THAN);
-        $feature->addRule($rule);
+        $rule = new Rule(1, 'user_id', 99, RuleOperator::LESS_THAN);
+        $feature = new Feature(1, 'user_id', true, [$rule], 10);
         $repoMock = $this->createMock(FeatureRepository::class);
         $repoMock->expects($this->once())->method('findByNameWithRules')
             ->willReturn($feature);
