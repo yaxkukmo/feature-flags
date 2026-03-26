@@ -24,12 +24,6 @@ doctrine:
                 dir: '%kernel.project_dir%/src/Infrastructure/Persistence'
                 prefix: 'App\Infrastructure\Persistence'
                 alias: App
-            AppEntity:
-                type: attribute
-                is_bundle: false
-                dir: '%kernel.project_dir%/src/Entity'
-                prefix: 'App\Entity'
-                alias: AppEntity
         controller_resolver:
             auto_mapping: false
 

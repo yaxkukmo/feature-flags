@@ -1,6 +1,6 @@
 <?php
 
-namespace App\Service\Strategy;
+namespace App\Application\Feature\Strategy;
 
 interface FeatureEvaluationStrategyInterface
 {

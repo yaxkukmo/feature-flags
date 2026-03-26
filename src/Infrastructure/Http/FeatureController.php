@@ -1,18 +1,18 @@
 <?php
 
-namespace App\Controller;
+namespace App\Infrastructure\Http;
 
 use App\Dto\RuleContext;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 use Symfony\Component\HttpFoundation\JsonResponse;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\Routing\Attribute\Route;
-use App\Service\FeatureService;
-use App\Exception\FeatureNotFoundException;
+use App\Application\Feature\FeatureServiceInterface;
+use App\Domain\Feature\Exception\FeatureNotFoundException;
 
 final class FeatureController extends AbstractController
 {
-    public function __construct(private FeatureService $featureService) { }
+    public function __construct(private FeatureServiceInterface $featureService) { }
 
     #[Route('/feature/{name}', methods: ['GET'], requirements: ['name' => '[a-zA-Z0-9_\-]+'])]
     public function check(string $name, Request $request): JsonResponse
@@ -34,17 +34,5 @@ final class FeatureController extends AbstractController
         }
 
         return new JsonResponse(['feature' => $name, 'enabled' => $isEnabled]);
-    }
-
-    #[Route('/feature/{name}/toggle', methods: ['GET'], requirements: ['name' => '[a-zA-Z0-9_\-]+'])]
-    public function toggle(string $name): JsonResponse
-    {
-        try {
-            $feature = $this->featureService->toggleFeatureValue($name);
-        } catch (FeatureNotFoundException $e) {
-            return new JsonResponse(['error' => $e->getMessage()], 404);
-        }
-
-        return new JsonResponse(['feature' => $name, 'enabled' => $feature->isEnabled()]);
     }
 }

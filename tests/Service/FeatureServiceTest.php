@@ -7,7 +7,7 @@ use App\Domain\Feature\Feature;
 use App\Domain\Feature\Rule;
 use App\Domain\Feature\RuleOperator;
 use App\Infrastructure\Persistence\DoctrineFeatureRepository as FeatureRepository;
-use App\Service\FeatureService;
+use App\Application\Feature\FeatureService;
 use PHPUnit\Framework\Attributes\Test;
 use PHPUnit\Framework\TestCase;
 
@@ -75,7 +75,7 @@ class FeatureServiceTest extends TestCase
 
     #[Test]
     public function returnsFalseWhenRulesNotMetEqualCondition() {
-        $rule = new Rule(1, 'user_id', 99, RuleOperator::EQUALS);
+        $rule = new Rule('user_id', 99, RuleOperator::EQUALS, 1);
         $feature = new Feature(1, 'someName', true, [$rule], 10);
         $repoMock = $this->createMock(FeatureRepository::class);
         $repoMock->expects($this->once())->method('findByNameWithRules')
@@ -86,7 +86,7 @@ class FeatureServiceTest extends TestCase
 
     #[Test]
     public function returnsTrueWhenRulesMetEqualCondition() {
-        $rule = new Rule(1, 'user_id', 99, RuleOperator::EQUALS);
+        $rule = new Rule('user_id', 99, RuleOperator::EQUALS, 1);
         $feature = new Feature(1, 'someName', true, [$rule], 10);
         $repoMock = $this->createMock(FeatureRepository::class);
         $repoMock->expects($this->once())->method('findByNameWithRules')
@@ -97,7 +97,7 @@ class FeatureServiceTest extends TestCase
 
     #[Test]
     public function returnsFalseWhenRulesNotMetGreaterThanCondition() {
-        $rule = new Rule(1, 'user_id', 99, RuleOperator::GREATER_THAN);
+        $rule = new Rule('user_id', 99, RuleOperator::GREATER_THAN, 1);
         $feature = new Feature(1, 'someName', true, [$rule], 10);
         $repoMock = $this->createMock(FeatureRepository::class);
         $repoMock->expects($this->once())->method('findByNameWithRules')
@@ -108,7 +108,7 @@ class FeatureServiceTest extends TestCase
 
     #[Test]
     public function returnsTrueWhenRulesMetGreaterThanCondition() {
-        $rule = new Rule(1, 'user_id', 99, RuleOperator::GREATER_THAN);
+        $rule = new Rule('user_id', 99, RuleOperator::GREATER_THAN, 1);
         $feature = new Feature(1, 'someName', true, [$rule], 10);
         $repoMock = $this->createMock(FeatureRepository::class);
         $repoMock->expects($this->once())->method('findByNameWithRules')
@@ -119,7 +119,7 @@ class FeatureServiceTest extends TestCase
 
     #[Test]
     public function returnsFalseWhenRulesNotMetLessThanCondition() {
-        $rule = new Rule(1, 'user_id', 99, RuleOperator::LESS_THAN);
+        $rule = new Rule('user_id', 99, RuleOperator::LESS_THAN, 1);
         $feature = new Feature(1, 'someName', true, [$rule], 10);
         $repoMock = $this->createMock(FeatureRepository::class);
         $repoMock->expects($this->once())->method('findByNameWithRules')
@@ -130,7 +130,7 @@ class FeatureServiceTest extends TestCase
 
     #[Test]
     public function returnsTrueWhenRulesMetLessThanCondition() {
-        $rule = new Rule(1, 'user_id', 99, RuleOperator::LESS_THAN);
+        $rule = new Rule('user_id', 99, RuleOperator::LESS_THAN, 1);
         $feature = new Feature(1, 'user_id', true, [$rule], 10);
         $repoMock = $this->createMock(FeatureRepository::class);
         $repoMock->expects($this->once())->method('findByNameWithRules')

@@ -5,7 +5,7 @@ namespace App\Domain\Feature;
 final class Feature
 {
     public function __construct(
-        private int $id,
+        private ?int $id,
         private string $name,
         private bool $enabled = false,
         private array $rules = [],

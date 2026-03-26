@@ -7,10 +7,10 @@ use App\Domain\Feature\RuleOperator;
 final class Rule
 {
     public function __construct(
-        private int $id,
         private string $type,
         private string $value,
-        private RuleOperator $operator
+        private RuleOperator $operator,
+        private ?int $id = null
     ) {}
 
     public function id(): int {
