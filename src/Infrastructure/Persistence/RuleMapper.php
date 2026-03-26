@@ -3,6 +3,7 @@
 namespace App\Infrastructure\Persistence;
 
 use App\Domain\Feature\Rule;
+use App\Domain\Feature\RuleOperator;
 use Doctrine\ORM\EntityManagerInterface;
 
 class RuleMapper
@@ -12,11 +13,12 @@ class RuleMapper
     ) {}
     public function toDomain(DoctrineRule $rule): Rule
     {
+        $operator = $rule->getOperator();
         return new Rule(
-            $rule->getId(),
-            $rule->getType(),
-            $rule->getValue(),
-            $rule->getOperator()
+            type: $rule->getType(),
+            value: $rule->getValue(),
+            operator: $operator instanceof RuleOperator ? $operator : RuleOperator::from($operator),
+            id: $rule->getId()
         );
     }
 
